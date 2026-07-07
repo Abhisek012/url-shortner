@@ -15,6 +15,10 @@ app.post("/api/create",(req,res)=>{
     
     
 })
+app.get("/api/ger",(req,res)=>{
+    console.log("get data");
+    
+})
 
 
 
