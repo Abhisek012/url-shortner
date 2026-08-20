@@ -1,0 +1,1 @@
+connectDb insted of connectDB(yt) in the mongodb.config.js and app.js
