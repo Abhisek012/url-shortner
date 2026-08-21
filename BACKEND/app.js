@@ -23,9 +23,14 @@ app.post("/api/create",async(req,res)=>{
     res.send(shortUrlId)
 })
 
-app.get("/api/get",(req,res)=>{
-    console.log("get data");
-    y
+app.get("/:id", async (req,res)=>{
+    const {id} = req.params
+    const url = await shortUrl.findOne({short_url:id})
+    if(url){
+        res.redirect(url.full_url)  
+    }else{
+        res.status(404).send("Not Found")
+    }
 })
 
 
