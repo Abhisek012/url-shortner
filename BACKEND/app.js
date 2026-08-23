@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import dotenv from "dotenv";
 dotenv.config("./.env");
 import connectDb from "./SRC/config/mongodb.config.js";
-import shortUrl from "./SRC/config/models/shorturl.model.js";
+import shortUrl from "./SRC/models/shorturl.model.js";
 
 const app = express();
 
