@@ -1,9 +1,9 @@
 import express from "express";
-import { nanoid } from "nanoid";
+
 import dotenv from "dotenv";
 dotenv.config("./.env");
 import connectDb from "./SRC/config/mongodb.config.js";
-import shortUrl from "./SRC/models/shorturl.model.js";
+
 import shorturl from "./SRC/routes/shorturl.route.js"
 
 const app = express();

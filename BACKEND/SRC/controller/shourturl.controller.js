@@ -7,3 +7,8 @@ export const createShourtUrl = async(req,res)=>{
     res.send(process.env.APP_URL + shortUrl)
 
 }
+
+export const redirectfromshortUrl = async (req, res)=>{
+    const {shortUrl} = req.params
+    const url = await find
+}
