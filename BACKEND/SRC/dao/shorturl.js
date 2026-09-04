@@ -13,5 +13,7 @@ export const saveShortUrl = async (shortUrlId, url, userId) => {
 
 
 export const getShortlUrl = async(shortUrl) => {
-    return await ShortUrl.findOneAndUpdate({shortUrl:shortUrl},{$inc:{clicks:1}})
+    return await ShortUrl.findOneAndUpdate(
+        {shortUrl:shortUrl},
+        {$inc:{clicks:1}})
 }
