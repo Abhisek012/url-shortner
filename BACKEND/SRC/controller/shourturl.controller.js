@@ -10,5 +10,5 @@ export const createShourtUrl = async (req, res) => {
 export const redirectfromshortUrl = async (req, res) => {
   const { id } = req.params;
   const url = await getShortlUrl(id);
-  res.redirect(url);
+  res.redirect(url.fullUrl);
 };
