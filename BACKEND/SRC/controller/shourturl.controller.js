@@ -1,7 +1,7 @@
 import { createshorturlWithoutUserservice } from "../services/shorturl.services.js";
 import { getShortlUrl } from "../dao/shorturl.js";
 
-export const createShourtUrl = async (req, res) => {
+export const createShortUrl = async (req, res) => {
   try {
     const { url } = req.body;
     if (!url) {
