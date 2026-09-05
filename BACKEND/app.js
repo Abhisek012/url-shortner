@@ -5,6 +5,7 @@ dotenv.config("./.env");
 import connectDb from "./SRC/config/mongodb.config.js";
 import { redirectfromshortUrl } from "./SRC/controller/shourturl.controller.js";
 import short_url from "./SRC/routes/shorturl.route.js"
+import errorMiddleware from "./SRC/middleware/error.middleware.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/api/create",short_url)
 
 app.get("/:id",redirectfromshortUrl)
 
+app.use(errorMiddleware);
 
 
 
