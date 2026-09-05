@@ -11,7 +11,7 @@ export const createShortUrl = async (req, res) => {
     res.send(process.env.APP_URL + shortUrl);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Something went wrong.")
+    res.status(500).send("Something went wrong. URL is not generated")
 
   }
 };
