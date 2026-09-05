@@ -4,12 +4,12 @@ import { getShortlUrl } from "../dao/shorturl.js";
 export const createShourtUrl = async (req, res) => {
   try {
     const { url } = req.body;
-    if(!url){
+    if (!url) {
       return res.status(400).send("URL is required")
     }
     const shortUrl = await createshorturlWithoutUserservice(url);
     res.send(process.env.APP_URL + shortUrl);
-  }catch(error){
+  } catch (error) {
     console.error(error);
     res.status(500).send("Something went wrong.")
 
@@ -17,7 +17,16 @@ export const createShourtUrl = async (req, res) => {
 };
 
 export const redirectfromshortUrl = async (req, res) => {
-  const { id } = req.params;
-  const url = await getShortlUrl(id);
-  res.redirect(url.fullUrl);
+  try {
+    const { id } = req.params;
+    const url = await getShortlUrl(id);
+
+    if (!url) {
+      return res.status(400).send("Short URL not found.")
+    }
+    res.redirect(url.fullUrl);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Something went wrong.")
+  }
 };
