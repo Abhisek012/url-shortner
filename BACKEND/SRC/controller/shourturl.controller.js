@@ -4,6 +4,9 @@ import { getShortlUrl } from "../dao/shorturl.js";
 export const createShourtUrl = async (req, res) => {
   try {
     const { url } = req.body;
+    if(!url){
+      return res.status(400).send("URL is required")
+    }
     const shortUrl = await createshorturlWithoutUserservice(url);
     res.send(process.env.APP_URL + shortUrl);
   }catch(error){
