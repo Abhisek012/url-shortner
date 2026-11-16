@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
 
-// 1. Get the original URL → 2. Generate a short ID → 3. Create a document → 4. Save it to MongoDBY
-app.use("/api/create",short_url)
+// 1. Get the original URL → 2. Generate a short ID → 3. Create a document → 4. Save it to MongoDB
+app.use("/api/create", short_url)
 
 app.get("/:id",redirectfromshortUrl)
 
