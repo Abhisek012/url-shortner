@@ -4,7 +4,7 @@ import { saveShortUrl } from "../dao/shorturl.js";
 
 const validateUrl = (url) => {
   try {
-    const parsedUrl = new Url(url);
+    const parsedUrl = new URL(url);
     if (!["http:", "https:"].includes(parsedUrl.protocol)) {
       throw new Error("Only HTTP and HTTPS URLs are allowed");
       }

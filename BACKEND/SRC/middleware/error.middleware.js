@@ -1,8 +1,8 @@
-const errorMiddleware = (error , req , res , next )=>{
-    console.error(error);
+const errorMiddleware = (err , req , res , next )=>{
+    console.error(err);
 
-    res.status(500).json({
-        message: "Something went wrong."
+    return res.status(500).json({
+        message: err.message ||  "Something went wrong."
     })
 }
 
