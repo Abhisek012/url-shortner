@@ -1,5 +1,5 @@
 import express from "express";
-
+import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config("./.env");
 import connectDb from "./SRC/config/mongodb.config.js";
@@ -9,6 +9,9 @@ import errorMiddleware from "./SRC/middleware/error.middleware.js";
 
 const app = express();
 
+app.use(cors({
+  origin: "http://localhost:5173"
+}))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
@@ -22,9 +25,9 @@ app.use(errorMiddleware);
 
 
 
-app.listen(3000,()=>{
-    connectDb();
-    console.log("Server is running on port http://localhost:3000/");
-    
-})
+const PORT = process.env.PORT || 3000;
 
+app.listen(PORT, () => {
+    connectDb();
+    console.log(`Server is running on port ${PORT}`);
+});
