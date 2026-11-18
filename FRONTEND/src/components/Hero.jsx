@@ -1,4 +1,5 @@
-import  { useState } from 'react';
+
+import { useState } from 'react';
 import {
   IconLink,
   IconCopy,
@@ -18,16 +19,20 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
 
   const formatUrl = (input) => {
     let trimmed = input.trim();
+
     if (!trimmed) return '';
+
     if (!/^https?:\/\//i.test(trimmed)) {
       trimmed = 'https://' + trimmed;
     }
+
     return trimmed;
   };
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
+
       if (text) {
         setUrlInput(text.trim());
         setError('');
@@ -51,15 +56,18 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
     try {
       new URL(formattedUrl);
     } catch {
-      setError('Invalid URL format. Please include a valid domain (e.g. https://google.com)');
+      setError(
+        'Invalid URL format. Please include a valid domain (e.g. https://google.com)'
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      // Call Express backend: POST /api/create with { url }
-      const res = await fetch('/api/create', {
+      // Call Express backend using environment variable (or fallback to relative path for local proxy)
+      const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+      const res = await fetch(`${apiBase}/api/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,19 +77,23 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
 
       if (!res.ok) {
         let msg = 'Failed to shorten URL';
+
         try {
           const errJson = await res.json();
           msg = errJson.message || msg;
         } catch {
-          const text = await res.text();
-          if (text) msg = text;
+          msg = 'Failed to shorten URL';
         }
+
         throw new Error(msg);
       }
 
-      // Backend returns plain text (process.env.APP_URL + shortUrl)
+      // Backend returns plain text (APP_URL + shortUrl)
       const shortUrl = (await res.text()).trim();
-      const shortId = shortUrl.split('/').pop() || Math.random().toString(36).slice(2, 8);
+
+      const shortId =
+        shortUrl.split('/').pop() ||
+        Math.random().toString(36).slice(2, 8);
 
       const linkObj = {
         fullUrl: formattedUrl,
@@ -91,11 +103,15 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
       };
 
       setCurrentResult(linkObj);
-      if (onLinkCreated) onLinkCreated(linkObj);
+
+      if (onLinkCreated) {
+        onLinkCreated(linkObj);
+      }
+
     } catch (err) {
       console.warn('Backend call note:', err.message);
 
-      // If backend is not currently running or network error, provide working preview link
+      // Fallback preview if backend is unavailable
       const fallbackId = Math.random().toString(36).substring(2, 9);
       const fallbackShortUrl = `http://localhost:3000/${fallbackId}`;
 
@@ -107,33 +123,44 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
       };
 
       setCurrentResult(linkObj);
-      if (onLinkCreated) onLinkCreated(linkObj);
+
+      if (onLinkCreated) {
+        onLinkCreated(linkObj);
+      }
 
       if (!err.message.includes('Failed to fetch')) {
         setError(err.message);
       }
+
     } finally {
       setLoading(false);
     }
   };
 
-  // Copy feature: copies short URL to clipboard and greens button with text "Copied"
+  // Copy short URL to clipboard
   const handleCopy = async () => {
     if (!currentResult || !currentResult.shortUrl) return;
+
     const textToCopy = currentResult.shortUrl;
 
     try {
       await navigator.clipboard.writeText(textToCopy);
+
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
     } catch {
-      // Fallback
+      // Clipboard fallback
       const el = document.createElement('input');
+
       el.value = textToCopy;
       document.body.appendChild(el);
       el.select();
+
       document.execCommand('copy');
+
       document.body.removeChild(el);
+
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -141,6 +168,7 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
 
   return (
     <section id="shortener" className="hero-wrap">
+
       <div className="hero-badge">
         <IconSparkles size={14} />
         <span>Fast, Free & Reliable Link Management</span>
@@ -155,7 +183,6 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
         generate instant QR codes, and share everywhere.
       </p>
 
-      {/* Feature category pills inspired by iLovePDF */}
       <div className="filter-pills-row">
         <span className="filter-pill active">All Tools</span>
         <span className="filter-pill">Instant Shorten</span>
@@ -165,11 +192,13 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
         <span className="filter-pill">Live Tracking</span>
       </div>
 
-      {/* Shortener Card */}
       <div className="shortener-box">
+
         <form onSubmit={handleSubmit} className="shortener-form">
+
           <div className="input-wrap">
             <IconLink size={20} className="input-link-icon" />
+
             <input
               type="text"
               value={urlInput}
@@ -181,6 +210,7 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
               className="main-url-input"
               required
             />
+
             {urlInput ? (
               <button
                 type="button"
@@ -219,6 +249,7 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
               </>
             )}
           </button>
+
         </form>
 
         {error && (
@@ -228,17 +259,22 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
           </div>
         )}
 
-        {/* Generated Short URL Result Box */}
         {currentResult && (
           <div className="result-box">
+
             <div className="result-top">
               <span className="result-label">Your Shortened Link:</span>
+
               <span className="result-date">
-                {new Date(currentResult.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(currentResult.createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
               </span>
             </div>
 
             <div className="result-details">
+
               <div className="result-short-url">
                 <a
                   href={currentResult.shortUrl}
@@ -250,21 +286,32 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
                 </a>
               </div>
 
-              <div className="result-dest" title={currentResult.fullUrl}>
+              <div
+                className="result-dest"
+                title={currentResult.fullUrl}
+              >
                 <span>Destination: </span>
-                <span className="dest-text">{currentResult.fullUrl}</span>
+                <span className="dest-text">
+                  {currentResult.fullUrl}
+                </span>
               </div>
+
             </div>
 
-            {/* Buttons: Copy (greens when copied), QR Code, Visit */}
             <div className="result-button-row">
+
               <button
                 type="button"
                 onClick={handleCopy}
                 className={`btn-result-copy ${copied ? 'is-copied' : ''}`}
                 title="Copy short link to clipboard"
               >
-                {copied ? <IconCheck size={18} /> : <IconCopy size={18} />}
+                {copied ? (
+                  <IconCheck size={18} />
+                ) : (
+                  <IconCopy size={18} />
+                )}
+
                 <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
 
@@ -288,6 +335,7 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
                 <IconExternalLink size={18} />
                 <span>Visit</span>
               </a>
+
             </div>
 
             {copied && (
@@ -296,32 +344,42 @@ export const Hero = ({ onLinkCreated, onOpenQr }) => {
                 <span>Copied to clipboard! Ready to paste.</span>
               </div>
             )}
+
           </div>
         )}
+
       </div>
 
-      {/* Highlights Bar */}
       <div className="hero-stats-bar">
+
         <div className="hero-stat-item">
           <strong>Instant</strong>
           <span>NanoID Generation</span>
         </div>
+
         <div className="hero-stat-sep"></div>
+
         <div className="hero-stat-item">
           <strong>1-Click</strong>
           <span>Clipboard Copy</span>
         </div>
+
         <div className="hero-stat-sep"></div>
+
         <div className="hero-stat-item">
           <strong>QR Ready</strong>
           <span>Scan on Mobile</span>
         </div>
+
         <div className="hero-stat-sep"></div>
+
         <div className="hero-stat-item">
           <strong>100% Free</strong>
           <span>No Sign-up Needed</span>
         </div>
+
       </div>
+
     </section>
   );
 };
