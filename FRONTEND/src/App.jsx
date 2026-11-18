@@ -1,122 +1,100 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { Navbar } from './components/Navbar';
+import { Hero } from './components/Hero';
+import { RecentLinks } from './components/RecentLinks';
+import { Features } from './components/Features';
+import { HowItWorks } from './components/HowItWorks';
+import { FAQ } from './components/FAQ';
+import { Footer } from './components/Footer';
+import { QrModal } from './components/QrModal';
+import './App.css';
+
+const STORAGE_KEY = 'shortlink_recent_links';
+const THEME_KEY = 'shortlink_theme';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem(THEME_KEY) || 'light';
+  });
+
+  const [recentLinks, setRecentLinks] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [qrModalUrl, setQrModalUrl] = useState(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(recentLinks));
+    } catch (e) {
+      console.error('Failed to save to localStorage', e);
+    }
+  }, [recentLinks]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const handleLinkCreated = (newLink) => {
+    setRecentLinks((prev) => {
+      const filtered = prev.filter((item) => item.shortUrl !== newLink.shortUrl);
+      return [newLink, ...filtered].slice(0, 50);
+    });
+  };
+
+  const handleDeleteLink = (idOrIndex) => {
+    setRecentLinks((prev) =>
+      prev.filter((item, idx) => item.shortId !== idOrIndex && idx !== idOrIndex)
+    );
+  };
+
+  const handleClearAll = () => {
+    if (window.confirm('Clear all your saved link history?')) {
+      setRecentLinks([]);
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="page-shell">
+      <Navbar theme={theme} onToggleTheme={toggleTheme} />
 
-      <div className="ticks"></div>
+      <main className="page-main">
+        <Hero
+          onLinkCreated={handleLinkCreated}
+          onOpenQr={(url) => setQrModalUrl(url)}
+        />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <RecentLinks
+          links={recentLinks}
+          onOpenQr={(url) => setQrModalUrl(url)}
+          onDeleteLink={handleDeleteLink}
+          onClearAll={handleClearAll}
+        />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <Features />
+        <HowItWorks />
+        <FAQ />
+      </main>
+
+      <Footer />
+
+      <QrModal
+        url={qrModalUrl}
+        isOpen={Boolean(qrModalUrl)}
+        onClose={() => setQrModalUrl(null)}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;
