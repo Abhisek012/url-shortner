@@ -11,7 +11,8 @@ export const createShortUrl = async (req, res , next) => {
       throw error;
     }
     const shortUrl = await createshorturlWithoutUserservice(url);
-    return res.send(process.env.APP_URL + shortUrl);
+    const baseUrl = process.env.APP_URL.replace(/\/+$/, "");
+    return res.send(`${baseUrl}/${shortUrl}`);
   } catch (error) {
     next(error)
 
