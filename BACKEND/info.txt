@@ -1,0 +1,32 @@
+control flow:
+app.js (router i.e short_url) -> routes (createShortUrl) -> controller(createshorturlWithoutUserservice) ->services(saveShortUrl) -> dao (saveShortUrl , getShortUrl) -> models(define db schema) 
+
+() contains the function it used of next module.
+
+in service we use generateNanoId function defined in the helper.js in the utils. 
+config contains mongodb.controller.js which establishes the connection betwee application and mongodb
+
+
+app.js
+   |
+   | Registers shortUrlRouter
+   v
+routes/shorturl.route.js
+   |
+   | Maps endpoint to controller function
+   v
+controller/shorturl.controller.js
+   |
+   | Calls appropriate service function
+   v
+services/shorturl.services.js
+   |
+   |---- generateNanoId() → utils/helper.js
+   |
+   |---- saveShortUrl() → dao/shorturl.js
+                              |
+                              v
+                       models/shorturl.model.js
+                              |
+                              v
+                           MongoDB
