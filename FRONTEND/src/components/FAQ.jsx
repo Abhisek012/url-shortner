@@ -28,7 +28,7 @@ export const FAQ = () => {
       <div className="section-head">
         <span className="section-badge">FAQ</span>
         <h2 className="section-title">Frequently Asked Questions</h2>
-        <p className="section-subtitle">Quick answers to common questions about ShortLink.</p>
+        <p className="section-subtitle">Quick answers to common questions about URI.</p>
       </div>
 
       <div className="faq-container">

@@ -1,5 +1,4 @@
-// import React from 'react';
-import { IconLink, IconSun, IconMoon, IconSparkles } from './Icons';
+import { IconLink, IconSun, IconMoon, IconSparkles, IconGithub } from './Icons';
 
 export const Navbar = ({ theme, onToggleTheme }) => {
   return (
@@ -10,7 +9,7 @@ export const Navbar = ({ theme, onToggleTheme }) => {
             <IconLink size={20} className="logo-icon" />
           </div>
           <span className="brand-text">
-            Short<span className="gradient-text">Link</span>
+            <span className="gradient-text">URI</span>
           </span>
         </a>
 
@@ -23,6 +22,17 @@ export const Navbar = ({ theme, onToggleTheme }) => {
         </nav>
 
         <div className="nav-actions">
+          <a
+            href="https://github.com/Abhisek012/url-shortner.git"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="theme-toggle-btn"
+            title="GitHub Repository"
+            aria-label="GitHub Repository"
+          >
+            <IconGithub size={18} />
+          </a>
+
           <button
             onClick={onToggleTheme}
             className="theme-toggle-btn"
